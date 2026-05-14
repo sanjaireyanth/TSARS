@@ -1,0 +1,884 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#0D7A55;--gl:#12A873;--gd:#085041;
+  --am:#D4811A;--amb:#FFF8EC;
+  --rd:#C53030;--rdb:#FFF0F0;
+  --bl:#185FA5;--blb:#E6F1FB;
+  --bk:#0E0F11;
+  --card:var(--color-background-primary);
+  --surf:var(--color-background-secondary);
+  --bdr:var(--color-border-tertiary);
+  --tx:var(--color-text-primary);
+  --txs:var(--color-text-secondary);
+}
+body{font-family:var(--font-sans);color:var(--tx);background:transparent}
+
+.app-shell{display:flex;height:680px;border:0.5px solid var(--bdr);border-radius:16px;overflow:hidden}
+
+.sidebar{width:200px;flex-shrink:0;background:#0E0F11;display:flex;flex-direction:column;padding:16px 0}
+.sb-logo{padding:0 16px 20px;border-bottom:0.5px solid rgba(255,255,255,0.08);margin-bottom:12px}
+.sb-brand{color:#4AE09A;font-size:15px;font-weight:500;letter-spacing:0.02em}
+.sb-sub{color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;margin-top:2px}
+.sb-section{padding:0 8px;margin-bottom:4px}
+.sb-label{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;padding:0 8px;margin-bottom:6px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,0.55);font-size:12px;font-weight:400;transition:all 0.15s;border:none;background:transparent;width:100%;text-align:left}
+.sb-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85)}
+.sb-item.active{background:rgba(13,122,85,0.25);color:#4AE09A}
+.sb-item i{font-size:15px;flex-shrink:0}
+.sb-spacer{flex:1}
+.sb-user{padding:12px 16px;border-top:0.5px solid rgba(255,255,255,0.08);margin-top:8px;display:flex;align-items:center;gap:8px}
+.sb-avatar{width:28px;height:28px;border-radius:50%;background:rgba(13,122,85,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:#4AE09A;font-weight:500;flex-shrink:0}
+.sb-uname{color:rgba(255,255,255,0.6);font-size:11px}
+.sb-urole{color:rgba(255,255,255,0.3);font-size:10px}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--surf)}
+
+.topbar{height:48px;background:var(--card);border-bottom:0.5px solid var(--bdr);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0}
+.topbar-title{font-size:14px;font-weight:500;flex:1}
+.topbar-badge{font-size:10px;padding:3px 8px;border-radius:99px;font-weight:500;display:flex;align-items:center;gap:4px}
+.badge-live{background:#EAF7F1;color:#085041}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:#0D7A55}
+.topbar-icon{width:30px;height:30px;border-radius:8px;border:0.5px solid var(--bdr);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txs);font-size:15px}
+.topbar-icon:hover{background:var(--surf)}
+
+.content{flex:1;overflow-y:auto;padding:16px}
+
+.page{display:none}
+.page.active{display:block}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:0.5px solid var(--bdr);border-radius:10px;padding:12px 14px}
+.stat-lbl{font-size:10px;color:var(--txs);font-weight:500;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:4px}
+.stat-val{font-size:20px;font-weight:500;line-height:1}
+.stat-d{font-size:10px;margin-top:3px;display:flex;align-items:center;gap:3px}
+.up{color:#0D7A55}.warn{color:#D4811A}.dn{color:#C53030}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+
+.panel{background:var(--card);border:0.5px solid var(--bdr);border-radius:10px;padding:14px 16px}
+.ptitle{font-size:11px;font-weight:500;color:var(--txs);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+.risk-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--bdr);font-size:12px}
+.risk-row:last-child{border-bottom:none}
+.risk-name{width:72px;font-weight:500;font-size:11px}
+.risk-bar-bg{flex:1;height:4px;background:var(--surf);border-radius:99px;overflow:hidden}
+.risk-bar-fill{height:100%;border-radius:99px}
+.risk-pct{width:30px;text-align:right;font-size:11px;font-weight:500}
+
+.feed-item{display:flex;gap:9px;padding:7px 0;border-bottom:0.5px solid var(--bdr);align-items:flex-start}
+.feed-item:last-child{border-bottom:none}
+.feed-ico{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.ico-red{background:#FFF0F0;color:#C53030}
+.ico-am{background:#FFF8EC;color:#D4811A}
+.ico-gr{background:#EAF7F1;color:#0D7A55}
+.feed-msg{font-size:11px;line-height:1.5;color:var(--tx)}
+.feed-time{font-size:10px;color:var(--txs);margin-top:2px}
+
+.btn-sm{font-size:11px;padding:5px 12px;border-radius:7px;border:0.5px solid var(--bdr);background:var(--card);color:var(--tx);cursor:pointer;font-family:var(--font-sans)}
+.btn-sm:hover{background:var(--surf)}
+.btn-primary{background:#0D7A55;color:#fff;border-color:#0D7A55;font-family:var(--font-sans)}
+.btn-primary:hover{background:#12A873}
+.btn-danger{background:#C53030;color:#fff;border-color:#C53030;font-family:var(--font-sans)}
+
+.form-row{margin-bottom:12px}
+.form-label{font-size:11px;color:var(--txs);font-weight:500;margin-bottom:5px;display:block;letter-spacing:0.04em}
+.form-input{width:100%;padding:8px 10px;border:0.5px solid var(--bdr);border-radius:7px;background:var(--card);color:var(--tx);font-size:12px;font-family:var(--font-sans);outline:none}
+.form-input:focus{border-color:#0D7A55}
+.form-select{width:100%;padding:8px 10px;border:0.5px solid var(--bdr);border-radius:7px;background:var(--card);color:var(--tx);font-size:12px;font-family:var(--font-sans);outline:none}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.status-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:500}
+.pill-green{background:#EAF7F1;color:#085041}
+.pill-amber{background:#FFF8EC;color:#854F0B}
+.pill-red{background:#FFF0F0;color:#A32D2D}
+.pill-gray{background:var(--surf);color:var(--txs)}
+
+.table-wrap{width:100%;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{text-align:left;padding:8px 10px;color:var(--txs);font-weight:500;font-size:10px;letter-spacing:0.05em;text-transform:uppercase;border-bottom:0.5px solid var(--bdr);background:var(--surf)}
+td{padding:8px 10px;border-bottom:0.5px solid var(--bdr);color:var(--tx);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surf)}
+
+.ai-score{display:flex;align-items:center;gap:6px}
+.score-bar-bg{width:50px;height:4px;background:var(--surf);border-radius:99px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:99px}
+
+.progress-ring{display:flex;align-items:center;justify-content:center;flex-direction:column}
+.ring-val{font-size:22px;font-weight:500}
+.ring-lbl{font-size:10px;color:var(--txs);margin-top:2px}
+
+.feature-card{background:var(--card);border:0.5px solid var(--bdr);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.fc-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.fc-icon-g{background:#EAF7F1;color:#0D7A55}
+.fc-icon-b{background:#E6F1FB;color:#185FA5}
+.fc-icon-a{background:#FFF8EC;color:#D4811A}
+.fc-icon-r{background:#FFF0F0;color:#C53030}
+.fc-title{font-size:12px;font-weight:500}
+.fc-desc{font-size:11px;color:var(--txs);line-height:1.5}
+
+.verify-stepper{display:flex;gap:0;margin-bottom:16px}
+.vs-step{flex:1;text-align:center;position:relative}
+.vs-step::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:1px;background:var(--bdr);z-index:0}
+.vs-step:last-child::after{display:none}
+.vs-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;margin:0 auto 5px;position:relative;z-index:1;border:0.5px solid var(--bdr);background:var(--card)}
+.vs-dot.done{background:#EAF7F1;border-color:#0D7A55;color:#0D7A55}
+.vs-dot.active-step{background:#0D7A55;border-color:#0D7A55;color:#fff}
+.vs-dot.pending{background:var(--surf);color:var(--txs)}
+.vs-lbl{font-size:9px;color:var(--txs)}
+
+.chart-bars{display:flex;align-items:flex-end;gap:5px;height:80px;padding-top:8px}
+.chart-bar{flex:1;border-radius:3px 3px 0 0;min-height:4px;position:relative}
+.chart-bar-lbl{font-size:9px;color:var(--txs);text-align:center;margin-top:4px}
+
+.notif-dot{width:7px;height:7px;border-radius:50%;background:#C53030;position:absolute;top:4px;right:4px}
+
+.limit-meter{margin-bottom:10px}
+.limit-top{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.limit-bar-bg{height:6px;background:var(--surf);border-radius:99px;overflow:hidden}
+.limit-bar-fill{height:100%;border-radius:99px}
+
+.modal-bg{background:rgba(0,0,0,0.45);border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:center;min-height:200px;margin-bottom:12px}
+.modal-box{background:var(--card);border-radius:10px;border:0.5px solid var(--bdr);padding:20px;width:100%;max-width:340px}
+.modal-title{font-size:14px;font-weight:500;margin-bottom:4px}
+.modal-sub{font-size:11px;color:var(--txs);margin-bottom:16px}
+
+.aadhaar-box{display:flex;gap:8px}
+.otp-box{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:12px 0}
+.otp-digit{height:36px;text-align:center;border:0.5px solid var(--bdr);border-radius:7px;font-size:16px;font-weight:500;background:var(--card);color:var(--tx);font-family:var(--font-sans)}
+.otp-digit:focus{border-color:#0D7A55;outline:none}
+.otp-digit.filled{border-color:#0D7A55;background:#EAF7F1;color:#085041}
+
+.phase-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--bdr)}
+.phase-item:last-child{border-bottom:none}
+.phase-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.pn-active{background:#EAF7F1;color:#085041;border:0.5px solid rgba(13,122,85,0.3)}
+.pn-next{background:#FFF8EC;color:#854F0B;border:0.5px solid rgba(212,129,26,0.3)}
+.pn-future{background:var(--surf);color:var(--txs);border:0.5px solid var(--bdr)}
+.phase-body{flex:1}
+.phase-title{font-size:12px;font-weight:500}
+.phase-detail{font-size:10px;color:var(--txs);margin-top:2px;line-height:1.5}
+.phase-cost{font-size:10px;font-weight:500;color:var(--txs);white-space:nowrap}
+</style>
+
+<h2 class="sr-only">TSARS — Tamil Nadu Smart Alcohol Regulation System full working application</h2>
+
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-brand">TSARS</div>
+      <div class="sb-sub">TN Regulation System</div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Main</div>
+      <button class="sb-item active" onclick="nav('dashboard',this)">
+        <i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard
+      </button>
+      <button class="sb-item" onclick="nav('verify',this)">
+        <i class="ti ti-id" aria-hidden="true"></i> Verification
+      </button>
+      <button class="sb-item" onclick="nav('ai',this)">
+        <i class="ti ti-brain" aria-hidden="true"></i> AI Monitor
+      </button>
+      <button class="sb-item" onclick="nav('analytics',this)">
+        <i class="ti ti-chart-bar" aria-hidden="true"></i> Analytics
+      </button>
+    </div>
+
+    <div class="sb-section" style="margin-top:8px">
+      <div class="sb-label">Admin</div>
+      <button class="sb-item" onclick="nav('consumers',this)">
+        <i class="ti ti-users" aria-hidden="true"></i> Consumers
+      </button>
+      <button class="sb-item" onclick="nav('purchase',this)">
+        <i class="ti ti-shopping-bag" aria-hidden="true"></i> Purchases
+      </button>
+      <button class="sb-item" onclick="nav('features',this)">
+        <i class="ti ti-star" aria-hidden="true"></i> Features
+      </button>
+      <button class="sb-item" onclick="nav('roadmap',this)">
+        <i class="ti ti-map-2" aria-hidden="true"></i> Roadmap
+      </button>
+    </div>
+
+    <div class="sb-spacer"></div>
+
+    <div class="sb-user">
+      <div class="sb-avatar">SR</div>
+      <div>
+        <div class="sb-uname">Sanjai Reyanth</div>
+        <div class="sb-urole">Admin · Gov</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="page-title">Dashboard</div>
+      <div class="topbar-badge badge-live"><div class="badge-dot"></div> Live</div>
+      <div class="topbar-icon" style="position:relative" title="Notifications">
+        <i class="ti ti-bell" aria-hidden="true"></i>
+        <div class="notif-dot"></div>
+      </div>
+      <div class="topbar-icon" title="Settings"><i class="ti ti-settings" aria-hidden="true"></i></div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-lbl"><i class="ti ti-users" style="font-size:11px" aria-hidden="true"></i> Registered</div>
+            <div class="stat-val">2.4M</div>
+            <div class="stat-d up"><i class="ti ti-trending-up" style="font-size:10px" aria-hidden="true"></i> +12% month</div>
+          </div>
+          <div class="stat">
+            <div class="stat-lbl"><i class="ti ti-shopping-bag" style="font-size:11px" aria-hidden="true"></i> Purchases</div>
+            <div class="stat-val">8.7M</div>
+            <div class="stat-d up"><i class="ti ti-trending-up" style="font-size:10px" aria-hidden="true"></i> Real-time</div>
+          </div>
+          <div class="stat">
+            <div class="stat-lbl"><i class="ti ti-alert-triangle" style="font-size:11px" aria-hidden="true"></i> AI Flags</div>
+            <div class="stat-val warn">342</div>
+            <div class="stat-d warn"><i class="ti ti-minus" style="font-size:10px" aria-hidden="true"></i> Under review</div>
+          </div>
+          <div class="stat">
+            <div class="stat-lbl"><i class="ti ti-ban" style="font-size:11px" aria-hidden="true"></i> Blocked</div>
+            <div class="stat-val dn">1,204</div>
+            <div class="stat-d dn"><i class="ti ti-shield" style="font-size:10px" aria-hidden="true"></i> This week</div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="panel">
+            <div class="ptitle"><i class="ti ti-map-pin" style="color:#0D7A55" aria-hidden="true"></i> District risk index</div>
+            <div class="risk-row"><span class="risk-name">Chennai</span><div class="risk-bar-bg"><div class="risk-bar-fill" style="width:84%;background:#C53030"></div></div><span class="risk-pct dn">84%</span></div>
+            <div class="risk-row"><span class="risk-name">Coimbatore</span><div class="risk-bar-bg"><div class="risk-bar-fill" style="width:71%;background:#C53030"></div></div><span class="risk-pct dn">71%</span></div>
+            <div class="risk-row"><span class="risk-name">Madurai</span><div class="risk-bar-bg"><div class="risk-bar-fill" style="width:58%;background:#D4811A"></div></div><span class="risk-pct warn">58%</span></div>
+            <div class="risk-row"><span class="risk-name">Salem</span><div class="risk-bar-bg"><div class="risk-bar-fill" style="width:44%;background:#D4811A"></div></div><span class="risk-pct warn">44%</span></div>
+            <div class="risk-row"><span class="risk-name">Trichy</span><div class="risk-bar-bg"><div class="risk-bar-fill" style="width:29%;background:#0D7A55"></div></div><span class="risk-pct up">29%</span></div>
+            <div class="risk-row"><span class="risk-name">Tirunelveli</span><div class="risk-bar-bg"><div class="risk-bar-fill" style="width:18%;background:#0D7A55"></div></div><span class="risk-pct up">18%</span></div>
+            <div class="chart-bars" style="margin-top:10px">
+              <div><div class="chart-bar" style="height:30%;background:#EAF7F1;border:0.5px solid rgba(13,122,85,0.2)"></div><div class="chart-bar-lbl">W1</div></div>
+              <div><div class="chart-bar" style="height:50%;background:#EAF7F1;border:0.5px solid rgba(13,122,85,0.2)"></div><div class="chart-bar-lbl">W2</div></div>
+              <div><div class="chart-bar" style="height:62%;background:#FFF8EC;border:0.5px solid rgba(212,129,26,0.2)"></div><div class="chart-bar-lbl">W3</div></div>
+              <div><div class="chart-bar" style="height:70%;background:#FFF8EC;border:0.5px solid rgba(212,129,26,0.2)"></div><div class="chart-bar-lbl">W4</div></div>
+              <div><div class="chart-bar" style="height:78%;background:#FFF0F0;border:0.5px solid rgba(197,48,48,0.2)"></div><div class="chart-bar-lbl">W5</div></div>
+              <div><div class="chart-bar" style="height:88%;background:#FFF0F0;border:0.5px solid rgba(197,48,48,0.2)"></div><div class="chart-bar-lbl">W6</div></div>
+              <div><div class="chart-bar" style="height:75%;background:#FFF0F0;border:0.5px solid rgba(197,48,48,0.2)"></div><div class="chart-bar-lbl">W7</div></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="ptitle"><i class="ti ti-robot" style="color:#0D7A55" aria-hidden="true"></i> AI monitoring feed</div>
+            <div class="feed-item"><div class="feed-ico ico-red"><i class="ti ti-alert-circle" aria-hidden="true"></i></div><div><div class="feed-msg">Bulk purchase blocked — #A4872, Chennai</div><div class="feed-time">2 min ago · Limit bypass</div></div></div>
+            <div class="feed-item"><div class="feed-ico ico-am"><i class="ti ti-repeat" aria-hidden="true"></i></div><div><div class="feed-msg">Multi-location pattern — 3 outlets in 4 hrs</div><div class="feed-time">14 min ago · Geo anomaly</div></div></div>
+            <div class="feed-item"><div class="feed-ico ico-red"><i class="ti ti-user-x" aria-hidden="true"></i></div><div><div class="feed-msg">Aadhaar mismatch — resale suspicion, CBE</div><div class="feed-time">31 min ago · ID fraud</div></div></div>
+            <div class="feed-item"><div class="feed-ico ico-gr"><i class="ti ti-hourglass" aria-hidden="true"></i></div><div><div class="feed-msg">Cooling period — 47 new users in pilot zone</div><div class="feed-time">1 hr ago · Intake</div></div></div>
+            <div class="feed-item"><div class="feed-ico ico-gr"><i class="ti ti-check" aria-hidden="true"></i></div><div><div class="feed-msg">Monthly limit reset — 1.2M consumers updated</div><div class="feed-time">3 hrs ago · System</div></div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="ptitle"><i class="ti ti-route" style="color:#0D7A55" aria-hidden="true"></i> Verification workflow</div>
+          <div class="verify-stepper">
+            <div class="vs-step"><div class="vs-dot done"><i class="ti ti-id" aria-hidden="true"></i></div><div class="vs-lbl">Aadhaar</div></div>
+            <div class="vs-step"><div class="vs-dot done"><i class="ti ti-device-mobile" aria-hidden="true"></i></div><div class="vs-lbl">OTP</div></div>
+            <div class="vs-step"><div class="vs-dot active-step"><i class="ti ti-fingerprint" aria-hidden="true"></i></div><div class="vs-lbl">Biometric</div></div>
+            <div class="vs-step"><div class="vs-dot pending"><i class="ti ti-hourglass" aria-hidden="true"></i></div><div class="vs-lbl">Cooling</div></div>
+            <div class="vs-step"><div class="vs-dot pending"><i class="ti ti-brain" aria-hidden="true"></i></div><div class="vs-lbl">AI scan</div></div>
+            <div class="vs-step"><div class="vs-dot pending"><i class="ti ti-shopping-bag" aria-hidden="true"></i></div><div class="vs-lbl">Purchase</div></div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center">
+            <button class="btn-sm btn-primary" onclick="sendPrompt('How does TSARS biometric verification work?')">Biometric details ↗</button>
+            <button class="btn-sm" onclick="nav('verify',document.querySelector(\'[onclick*=\"verify\"]\'))">Open verification ↗</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VERIFICATION PAGE -->
+      <div class="page" id="page-verify">
+        <div class="modal-bg">
+          <div class="modal-box">
+            <div class="modal-title">Consumer verification</div>
+            <div class="modal-sub">Step 1 of 4 — Aadhaar identity check</div>
+
+            <div class="form-row">
+              <label class="form-label">Aadhaar number</label>
+              <div class="aadhaar-box">
+                <input class="form-input" placeholder="XXXX" maxlength="4" style="text-align:center;letter-spacing:0.15em" id="aa1" oninput="aadhaarInput(this,'aa2')">
+                <input class="form-input" placeholder="XXXX" maxlength="4" style="text-align:center;letter-spacing:0.15em" id="aa2" oninput="aadhaarInput(this,'aa3')">
+                <input class="form-input" placeholder="XXXX" maxlength="4" style="text-align:center;letter-spacing:0.15em" id="aa3" oninput="aadhaarInput(this,null)">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">Mobile number</label>
+              <input class="form-input" placeholder="+91 XXXXX XXXXX" id="mobile-inp">
+            </div>
+
+            <div class="form-row">
+              <label class="form-label">OTP (sent to mobile)</label>
+              <div class="otp-box" id="otp-boxes">
+                <input class="otp-digit" maxlength="1" oninput="otpInput(this,1)">
+                <input class="otp-digit" maxlength="1" oninput="otpInput(this,2)">
+                <input class="otp-digit" maxlength="1" oninput="otpInput(this,3)">
+                <input class="otp-digit" maxlength="1" oninput="otpInput(this,4)">
+                <input class="otp-digit" maxlength="1" oninput="otpInput(this,5)">
+                <input class="otp-digit" maxlength="1" oninput="otpInput(this,6)">
+              </div>
+            </div>
+
+            <div style="display:flex;gap:8px">
+              <button class="btn-sm" style="flex:1" onclick="sendOtp()">Send OTP</button>
+              <button class="btn-sm btn-primary" style="flex:1" onclick="verifyNow()">Verify & continue</button>
+            </div>
+
+            <div id="verify-status" style="margin-top:10px;font-size:11px;text-align:center;color:var(--txs)"></div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="panel">
+            <div class="ptitle"><i class="ti ti-fingerprint" style="color:#0D7A55" aria-hidden="true"></i> Biometric check</div>
+            <div style="text-align:center;padding:16px 0">
+              <div style="width:64px;height:64px;border-radius:50%;background:#EAF7F1;border:0.5px solid rgba(13,122,85,0.25);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:28px;color:#0D7A55">
+                <i class="ti ti-fingerprint" aria-hidden="true"></i>
+              </div>
+              <div style="font-size:12px;font-weight:500;margin-bottom:4px">Fingerprint scanner ready</div>
+              <div style="font-size:11px;color:var(--txs);margin-bottom:12px">Place finger on biometric device</div>
+              <button class="btn-sm btn-primary" onclick="simulateScan()">Simulate scan</button>
+              <div id="scan-result" style="margin-top:8px;font-size:11px"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="ptitle"><i class="ti ti-hourglass" style="color:#D4811A" aria-hidden="true"></i> Cooling period status</div>
+            <div style="margin-bottom:10px">
+              <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
+                <span>Cooling period</span>
+                <span class="warn">3 days remaining</span>
+              </div>
+              <div class="limit-bar-bg"><div class="limit-bar-fill" style="width:57%;background:#D4811A"></div></div>
+            </div>
+            <div style="font-size:11px;color:var(--txs);line-height:1.6">
+              New registrations undergo a mandatory waiting period before their first purchase is allowed. This reduces impulsive consumption for first-time users.
+            </div>
+            <div style="margin-top:10px;padding:8px;background:#FFF8EC;border-radius:7px;border:0.5px solid rgba(212,129,26,0.2);font-size:11px;color:#854F0B">
+              <i class="ti ti-info-circle" style="font-size:12px" aria-hidden="true"></i> Eligible from: <strong>May 17, 2026</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI MONITOR PAGE -->
+      <div class="page" id="page-ai">
+        <div class="grid3" style="margin-bottom:12px">
+          <div class="stat">
+            <div class="stat-lbl">Scans today</div>
+            <div class="stat-val">14,832</div>
+            <div class="stat-d up"><i class="ti ti-trending-up" style="font-size:10px" aria-hidden="true"></i> +8%</div>
+          </div>
+          <div class="stat">
+            <div class="stat-lbl">Flagged</div>
+            <div class="stat-val warn">127</div>
+            <div class="stat-d warn">0.86% rate</div>
+          </div>
+          <div class="stat">
+            <div class="stat-lbl">Auto-blocked</div>
+            <div class="stat-val dn">38</div>
+            <div class="stat-d dn">High confidence</div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:12px">
+          <div class="ptitle"><i class="ti ti-scan" style="color:#0D7A55" aria-hidden="true"></i> AI risk scanner — simulate detection</div>
+          <div class="form-row-2">
+            <div class="form-row">
+              <label class="form-label">Consumer ID</label>
+              <input class="form-input" id="sim-consumer" placeholder="e.g. TN-A4872" value="TN-A4872">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Purchase count (this week)</label>
+              <input class="form-input" type="number" id="sim-count" placeholder="0" value="5" min="0" max="20">
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-row">
+              <label class="form-label">Locations visited</label>
+              <input class="form-input" type="number" id="sim-locs" placeholder="1" value="3" min="1" max="10">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Age group</label>
+              <select class="form-select" id="sim-age">
+                <option value="youth">18–25 (youth)</option>
+                <option value="adult" selected>26–45 (adult)</option>
+                <option value="senior">46+ (senior)</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-sm btn-primary" onclick="runAIScan()" style="width:100%">
+            <i class="ti ti-brain" aria-hidden="true"></i> Run AI risk scan
+          </button>
+          <div id="ai-result" style="margin-top:12px;display:none"></div>
+        </div>
+
+        <div class="panel">
+          <div class="ptitle"><i class="ti ti-list" style="color:#0D7A55" aria-hidden="true"></i> Recent AI flags</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Consumer ID</th><th>Risk type</th><th>District</th><th>AI score</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>TN-A4872</td><td>Bulk purchase</td><td>Chennai</td><td><div class="ai-score"><div class="score-bar-bg"><div class="score-bar-fill" style="width:92%;background:#C53030"></div></div><span style="font-size:10px;color:#C53030">92</span></div></td><td><span class="status-pill pill-red">Blocked</span></td></tr>
+                <tr><td>TN-B2341</td><td>Geo anomaly</td><td>Coimbatore</td><td><div class="ai-score"><div class="score-bar-bg"><div class="score-bar-fill" style="width:74%;background:#D4811A"></div></div><span style="font-size:10px;color:#D4811A">74</span></div></td><td><span class="status-pill pill-amber">Review</span></td></tr>
+                <tr><td>TN-C9910</td><td>ID mismatch</td><td>Madurai</td><td><div class="ai-score"><div class="score-bar-bg"><div class="score-bar-fill" style="width:88%;background:#C53030"></div></div><span style="font-size:10px;color:#C53030">88</span></div></td><td><span class="status-pill pill-red">Blocked</span></td></tr>
+                <tr><td>TN-D5523</td><td>Freq. spike</td><td>Salem</td><td><div class="ai-score"><div class="score-bar-bg"><div class="score-bar-fill" style="width:61%;background:#D4811A"></div></div><span style="font-size:10px;color:#D4811A">61</span></div></td><td><span class="status-pill pill-amber">Review</span></td></tr>
+                <tr><td>TN-E7781</td><td>Youth limit</td><td>Trichy</td><td><div class="ai-score"><div class="score-bar-bg"><div class="score-bar-fill" style="width:45%;background:#0D7A55"></div></div><span style="font-size:10px;color:#0D7A55">45</span></div></td><td><span class="status-pill pill-green">Allowed</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS PAGE -->
+      <div class="page" id="page-analytics">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-lbl">Total sales (₹)</div><div class="stat-val">₹84Cr</div><div class="stat-d up"><i class="ti ti-trending-up" style="font-size:10px" aria-hidden="true"></i> May 2026</div></div>
+          <div class="stat"><div class="stat-lbl">Unique buyers</div><div class="stat-val">1.1M</div><div class="stat-d up">This month</div></div>
+          <div class="stat"><div class="stat-lbl">Avg. purchase</div><div class="stat-val">₹760</div><div class="stat-d warn">+₹42 vs last</div></div>
+          <div class="stat"><div class="stat-lbl">Health referrals</div><div class="stat-val up">2,341</div><div class="stat-d up"><i class="ti ti-trending-up" style="font-size:10px" aria-hidden="true"></i> +19%</div></div>
+        </div>
+
+        <div class="grid2">
+          <div class="panel">
+            <div class="ptitle"><i class="ti ti-chart-bar" style="color:#0D7A55" aria-hidden="true"></i> Monthly sales trend</div>
+            <div class="chart-bars" style="height:100px">
+              <div style="flex:1"><div class="chart-bar" style="height:55%;background:#EAF7F1;border:0.5px solid rgba(13,122,85,0.2)"></div><div class="chart-bar-lbl">Dec</div></div>
+              <div style="flex:1"><div class="chart-bar" style="height:62%;background:#EAF7F1;border:0.5px solid rgba(13,122,85,0.2)"></div><div class="chart-bar-lbl">Jan</div></div>
+              <div style="flex:1"><div class="chart-bar" style="height:70%;background:#EAF7F1;border:0.5px solid rgba(13,122,85,0.2)"></div><div class="chart-bar-lbl">Feb</div></div>
+              <div style="flex:1"><div class="chart-bar" style="height:68%;background:#EAF7F1;border:0.5px solid rgba(13,122,85,0.2)"></div><div class="chart-bar-lbl">Mar</div></div>
+              <div style="flex:1"><div class="chart-bar" style="height:80%;background:#EAF7F1;border:0.5px solid rgba(13,122,85,0.2)"></div><div class="chart-bar-lbl">Apr</div></div>
+              <div style="flex:1"><div class="chart-bar" style="height:100%;background:#0D7A55;border:0.5px solid rgba(13,122,85,0.5)"></div><div class="chart-bar-lbl" style="color:#0D7A55;font-weight:500">May</div></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="ptitle"><i class="ti ti-map-pin" style="color:#0D7A55" aria-hidden="true"></i> Pilot district status</div>
+            <div style="margin-bottom:8px">
+              <div class="limit-top"><span>Chennai</span><span class="dn">High risk</span></div>
+              <div class="limit-bar-bg"><div class="limit-bar-fill" style="width:84%;background:#C53030"></div></div>
+            </div>
+            <div style="margin-bottom:8px">
+              <div class="limit-top"><span>Coimbatore</span><span class="dn">High risk</span></div>
+              <div class="limit-bar-bg"><div class="limit-bar-fill" style="width:71%;background:#C53030"></div></div>
+            </div>
+            <div style="margin-bottom:8px">
+              <div class="limit-top"><span>Madurai</span><span class="warn">Medium</span></div>
+              <div class="limit-bar-bg"><div class="limit-bar-fill" style="width:58%;background:#D4811A"></div></div>
+            </div>
+            <div>
+              <div class="limit-top"><span>Salem</span><span class="warn">Medium</span></div>
+              <div class="limit-bar-bg"><div class="limit-bar-fill" style="width:44%;background:#D4811A"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="ptitle"><i class="ti ti-heart" style="color:#C53030" aria-hidden="true"></i> Public health awareness</div>
+          <div class="grid3" style="margin-bottom:0">
+            <div style="padding:10px;background:#EAF7F1;border-radius:8px;border:0.5px solid rgba(13,122,85,0.15)">
+              <div style="font-size:11px;font-weight:500;color:#085041;margin-bottom:3px">Health messages sent</div>
+              <div style="font-size:18px;font-weight:500;color:#0D7A55">4.2M</div>
+              <div style="font-size:10px;color:#0F6E56">This quarter</div>
+            </div>
+            <div style="padding:10px;background:#FFF8EC;border-radius:8px;border:0.5px solid rgba(212,129,26,0.15)">
+              <div style="font-size:11px;font-weight:500;color:#854F0B;margin-bottom:3px">Addiction referrals</div>
+              <div style="font-size:18px;font-weight:500;color:#D4811A">2,341</div>
+              <div style="font-size:10px;color:#854F0B">+19% vs last</div>
+            </div>
+            <div style="padding:10px;background:#E6F1FB;border-radius:8px;border:0.5px solid rgba(24,95,165,0.15)">
+              <div style="font-size:11px;font-weight:500;color:#0C447C;margin-bottom:3px">Rehab support links</div>
+              <div style="font-size:18px;font-weight:500;color:#185FA5">891</div>
+              <div style="font-size:10px;color:#0C447C">Clicked this month</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONSUMERS PAGE -->
+      <div class="page" id="page-consumers">
+        <div class="panel" style="margin-bottom:12px">
+          <div class="ptitle"><i class="ti ti-search" style="color:#0D7A55" aria-hidden="true"></i> Consumer lookup</div>
+          <div class="form-row-2">
+            <div class="form-row">
+              <label class="form-label">Search by Aadhaar / Consumer ID</label>
+              <input class="form-input" id="consumer-search" placeholder="TN-XXXXX or last 4 of Aadhaar" oninput="searchConsumer(this.value)">
+            </div>
+            <div class="form-row">
+              <label class="form-label">District filter</label>
+              <select class="form-select" id="district-filter" onchange="searchConsumer(document.getElementById('consumer-search').value)">
+                <option value="">All districts</option>
+                <option>Chennai</option>
+                <option>Salem</option>
+                <option>Coimbatore</option>
+                <option>Madurai</option>
+                <option>Trichy</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="ptitle"><i class="ti ti-users" style="color:#0D7A55" aria-hidden="true"></i> Consumer records</div>
+          <div class="table-wrap">
+            <table id="consumer-table">
+              <thead><tr><th>Consumer ID</th><th>District</th><th>Age group</th><th>Monthly limit</th><th>Used</th><th>Status</th><th>Risk</th></tr></thead>
+              <tbody id="consumer-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PURCHASE PAGE -->
+      <div class="page" id="page-purchase">
+        <div class="panel" style="margin-bottom:12px">
+          <div class="ptitle"><i class="ti ti-shopping-bag" style="color:#0D7A55" aria-hidden="true"></i> New purchase validation</div>
+          <div class="form-row-2">
+            <div class="form-row">
+              <label class="form-label">Consumer ID</label>
+              <input class="form-input" id="pur-consumer" placeholder="TN-XXXXX" value="TN-A4872">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Outlet ID</label>
+              <input class="form-input" id="pur-outlet" placeholder="TASMAC-XXXX" value="TASMAC-0421">
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-row">
+              <label class="form-label">Product</label>
+              <select class="form-select" id="pur-product">
+                <option>Beer (650ml)</option>
+                <option>Whisky (180ml)</option>
+                <option>Rum (375ml)</option>
+                <option>Wine (750ml)</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Quantity</label>
+              <input class="form-input" type="number" id="pur-qty" value="2" min="1" max="10">
+            </div>
+          </div>
+          <button class="btn-sm btn-primary" onclick="validatePurchase()" style="width:100%">
+            <i class="ti ti-shield-check" aria-hidden="true"></i> Validate purchase
+          </button>
+          <div id="pur-result" style="margin-top:12px;display:none"></div>
+        </div>
+
+        <div class="panel">
+          <div class="ptitle"><i class="ti ti-list" style="color:#0D7A55" aria-hidden="true"></i> Recent purchase log</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Time</th><th>Consumer</th><th>Outlet</th><th>Product</th><th>Qty</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>14:32</td><td>TN-E7781</td><td>TASMAC-0102</td><td>Beer 650ml</td><td>1</td><td><span class="status-pill pill-green">Approved</span></td></tr>
+                <tr><td>14:28</td><td>TN-A4872</td><td>TASMAC-0421</td><td>Whisky 180ml</td><td>6</td><td><span class="status-pill pill-red">Blocked</span></td></tr>
+                <tr><td>14:15</td><td>TN-D5523</td><td>TASMAC-0318</td><td>Rum 375ml</td><td>2</td><td><span class="status-pill pill-amber">Review</span></td></tr>
+                <tr><td>13:58</td><td>TN-F1190</td><td>TASMAC-0215</td><td>Wine 750ml</td><td>1</td><td><span class="status-pill pill-green">Approved</span></td></tr>
+                <tr><td>13:44</td><td>TN-C9910</td><td>TASMAC-0421</td><td>Whisky 180ml</td><td>4</td><td><span class="status-pill pill-red">Blocked</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURES PAGE -->
+      <div class="page" id="page-features">
+        <div class="grid3">
+          <div class="feature-card">
+            <div class="fc-icon fc-icon-g"><i class="ti ti-id" aria-hidden="true"></i></div>
+            <div class="fc-title">Digital consumer verification</div>
+            <div class="fc-desc">Aadhaar-based registration with OTP authentication and secure identity linking.</div>
+          </div>
+          <div class="feature-card">
+            <div class="fc-icon fc-icon-b"><i class="ti ti-brain" aria-hidden="true"></i></div>
+            <div class="fc-title">AI-based risk detection</div>
+            <div class="fc-desc">Real-time behavioral analytics flags suspicious buying patterns and high-risk behavior.</div>
+          </div>
+          <div class="feature-card">
+            <div class="fc-icon fc-icon-g"><i class="ti ti-chart-bar" aria-hidden="true"></i></div>
+            <div class="fc-title">Government analytics dashboard</div>
+            <div class="fc-desc">Live monitoring of sales, buyer counts, district-wise trends, and addiction-risk zones.</div>
+          </div>
+          <div class="feature-card">
+            <div class="fc-icon fc-icon-a"><i class="ti ti-hourglass" aria-hidden="true"></i></div>
+            <div class="fc-title">Cooling period system</div>
+            <div class="fc-desc">Mandatory waiting period for new users to reduce impulsive first-time purchases.</div>
+          </div>
+          <div class="feature-card">
+            <div class="fc-icon fc-icon-b"><i class="ti ti-shopping-bag" aria-hidden="true"></i></div>
+            <div class="fc-title">Smart purchase limits</div>
+            <div class="fc-desc">Age-based monthly purchase caps with weekly distribution control per consumer.</div>
+          </div>
+          <div class="feature-card">
+            <div class="fc-icon fc-icon-g"><i class="ti ti-lock" aria-hidden="true"></i></div>
+            <div class="fc-title">Privacy & security</div>
+            <div class="fc-desc">Encrypted data storage, restricted access controls, and regulation-only usage policy.</div>
+          </div>
+          <div class="feature-card">
+            <div class="fc-icon fc-icon-r"><i class="ti ti-ban" aria-hidden="true"></i></div>
+            <div class="fc-title">Anti-black-market monitoring</div>
+            <div class="fc-desc">Detects suspicious resale behavior, identity misuse, and bulk purchase attempts.</div>
+          </div>
+          <div class="feature-card">
+            <div class="fc-icon fc-icon-g"><i class="ti ti-heart" aria-hidden="true"></i></div>
+            <div class="fc-title">Public health awareness</div>
+            <div class="fc-desc">Health messages, addiction-support resources, and responsible-consumption education.</div>
+          </div>
+          <div class="feature-card">
+            <div class="fc-icon fc-icon-b"><i class="ti ti-device-mobile" aria-hidden="true"></i></div>
+            <div class="fc-title">Modern digital platform</div>
+            <div class="fc-desc">Scalable Flutter app with Firebase backend and AI-powered analytics system.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROADMAP PAGE -->
+      <div class="page" id="page-roadmap">
+        <div class="grid2">
+          <div class="panel">
+            <div class="ptitle"><i class="ti ti-flag" style="color:#0D7A55" aria-hidden="true"></i> Development phases</div>
+            <div class="phase-item">
+              <div class="phase-num pn-active">1</div>
+              <div class="phase-body">
+                <div class="phase-title">Prototype</div>
+                <div class="phase-detail">UI/UX design · Verification flow · Basic purchase-limit system · Initial dashboard</div>
+              </div>
+              <div>
+                <div class="phase-cost">₹10–25L</div>
+                <span class="status-pill pill-green" style="margin-top:4px;display:inline-flex">Active</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <div class="phase-num pn-next">2</div>
+              <div class="phase-body">
+                <div class="phase-title">Pilot deployment</div>
+                <div class="phase-detail">Chennai · Salem · Coimbatore · Madurai</div>
+              </div>
+              <div>
+                <div class="phase-cost">₹100–300Cr</div>
+                <span class="status-pill pill-amber" style="margin-top:4px;display:inline-flex">Next</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <div class="phase-num pn-future">3</div>
+              <div class="phase-body">
+                <div class="phase-title">AI integration</div>
+                <div class="phase-detail">Risk prediction · Trend analytics · Advanced monitoring</div>
+              </div>
+              <div>
+                <div class="phase-cost">TBD</div>
+                <span class="status-pill pill-gray" style="margin-top:4px;display:inline-flex">Planned</span>
+              </div>
+            </div>
+            <div class="phase-item">
+              <div class="phase-num pn-future">4</div>
+              <div class="phase-body">
+                <div class="phase-title">Full statewide rollout</div>
+                <div class="phase-detail">All 38 TN districts · Infrastructure scaling · Advanced analytics</div>
+              </div>
+              <div>
+                <div class="phase-cost">₹500–1000Cr</div>
+                <span class="status-pill pill-gray" style="margin-top:4px;display:inline-flex">Future</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="ptitle"><i class="ti ti-stack-2" style="color:#0D7A55" aria-hidden="true"></i> Technology stack</div>
+            <div style="margin-bottom:10px">
+              <div class="form-label" style="margin-bottom:6px">Frontend</div>
+              <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;border:0.5px solid var(--bdr);background:var(--surf);font-size:11px;font-weight:500;margin:2px">
+                <span style="width:6px;height:6px;border-radius:50%;background:#0D7A55;flex-shrink:0"></span> Flutter
+              </span>
+            </div>
+            <div style="margin-bottom:10px">
+              <div class="form-label" style="margin-bottom:6px">Backend</div>
+              <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;border:0.5px solid var(--bdr);background:var(--surf);font-size:11px;font-weight:500;margin:2px">
+                <span style="width:6px;height:6px;border-radius:50%;background:#D4811A;flex-shrink:0"></span> Firebase
+              </span>
+              <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;border:0.5px solid var(--bdr);background:var(--surf);font-size:11px;font-weight:500;margin:2px">
+                <span style="width:6px;height:6px;border-radius:50%;background:#185FA5;flex-shrink:0"></span> Node.js
+              </span>
+            </div>
+            <div style="margin-bottom:10px">
+              <div class="form-label" style="margin-bottom:6px">AI engine</div>
+              <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;border:0.5px solid var(--bdr);background:var(--surf);font-size:11px;font-weight:500;margin:2px">
+                <span style="width:6px;height:6px;border-radius:50%;background:#C53030;flex-shrink:0"></span> Python
+              </span>
+            </div>
+            <div style="margin-bottom:10px">
+              <div class="form-label" style="margin-bottom:6px">Database</div>
+              <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;border:0.5px solid var(--bdr);background:var(--surf);font-size:11px;font-weight:500;margin:2px">
+                <span style="width:6px;height:6px;border-radius:50%;background:#0D7A55;flex-shrink:0"></span> Firestore
+              </span>
+              <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;border:0.5px solid var(--bdr);background:var(--surf);font-size:11px;font-weight:500;margin:2px">
+                <span style="width:6px;height:6px;border-radius:50%;background:#185FA5;flex-shrink:0"></span> PostgreSQL
+              </span>
+            </div>
+            <div>
+              <div class="form-label" style="margin-bottom:6px">Auth</div>
+              <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;border:0.5px solid var(--bdr);background:var(--surf);font-size:11px;font-weight:500;margin:2px">
+                <span style="width:6px;height:6px;border-radius:50%;background:#854F0B;flex-shrink:0"></span> Aadhaar + OTP
+              </span>
+            </div>
+
+            <div style="margin-top:14px;padding:10px;background:#EAF7F1;border-radius:8px;border:0.5px solid rgba(13,122,85,0.15)">
+              <div style="font-size:11px;font-weight:500;color:#085041;margin-bottom:2px">Open source · MIT license</div>
+              <div style="font-size:10px;color:#0F6E56;line-height:1.5">Contributions from developers, designers, AI engineers, researchers, and policy thinkers are welcome.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const pages={dashboard:'Dashboard',verify:'Verification',ai:'AI Monitor',analytics:'Analytics',consumers:'Consumers',purchase:'Purchases',features:'Features',roadmap:'Roadmap'};
+
+function nav(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('page-title').textContent=pages[id]||id;
+}
+
+function aadhaarInput(el,nextId){
+  if(el.value.length===4&&nextId){document.getElementById(nextId).focus();}
+}
+
+function otpInput(el,idx){
+  if(el.value){
+    el.classList.add('filled');
+    var next=el.parentElement.querySelector('input:nth-child('+(idx+1)+')');
+    if(next)next.focus();
+  }else{el.classList.remove('filled');}
+}
+
+function sendOtp(){
+  var m=document.getElementById('mobile-inp').value;
+  var s=document.getElementById('verify-status');
+  if(!m){s.textContent='Enter mobile number first.';s.style.color='#C53030';return;}
+  s.textContent='OTP sent to '+m+'. Use 1 2 3 4 5 6 for demo.';s.style.color='#0D7A55';
+  var digits=document.querySelectorAll('.otp-digit');
+  var demo=['1','2','3','4','5','6'];
+  digits.forEach((d,i)=>{setTimeout(()=>{d.value=demo[i];d.classList.add('filled');},300*(i+1));});
+}
+
+function verifyNow(){
+  var s=document.getElementById('verify-status');
+  var digits=document.querySelectorAll('.otp-digit');
+  var filled=[...digits].filter(d=>d.value).length;
+  if(filled<6){s.textContent='Enter complete OTP first.';s.style.color='#C53030';return;}
+  s.innerHTML='<span style="color:#0D7A55"><i class="ti ti-circle-check"></i> Aadhaar verified! Proceeding to biometric...</span>';
+}
+
+function simulateScan(){
+  var r=document.getElementById('scan-result');
+  r.textContent='Scanning...';r.style.color='var(--txs)';
+  setTimeout(()=>{r.innerHTML='<span style="color:#0D7A55"><i class="ti ti-circle-check"></i> Fingerprint matched — biometric verified</span>';},1200);
+}
+
+function runAIScan(){
+  var consumer=document.getElementById('sim-consumer').value||'TN-XXXXX';
+  var count=parseInt(document.getElementById('sim-count').value)||0;
+  var locs=parseInt(document.getElementById('sim-locs').value)||1;
+  var age=document.getElementById('sim-age').value;
+  var score=0;
+  if(count>7)score+=40;else if(count>4)score+=20;else score+=5;
+  if(locs>2)score+=35;else if(locs>1)score+=15;
+  if(age==='youth')score+=25;else if(age==='adult')score+=5;
+  score=Math.min(score,99);
+  var r=document.getElementById('ai-result');
+  r.style.display='block';
+  var color=score>=70?'#C53030':score>=45?'#D4811A':'#0D7A55';
+  var status=score>=70?'High risk — blocked':score>=45?'Medium risk — flagged for review':'Low risk — purchase allowed';
+  var pill=score>=70?'pill-red':score>=45?'pill-amber':'pill-green';
+  r.innerHTML='<div style="padding:12px;border-radius:8px;border:0.5px solid var(--bdr);background:var(--surf)">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+    +'<span style="font-size:12px;font-weight:500">Consumer '+consumer+'</span>'
+    +'<span class="status-pill '+pill+'">'+status+'</span></div>'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
+    +'<span style="font-size:11px;color:var(--txs)">AI risk score</span>'
+    +'<div style="flex:1;height:6px;background:var(--color-background-primary);border-radius:99px;overflow:hidden;border:0.5px solid var(--bdr)">'
+    +'<div style="height:100%;width:'+score+'%;background:'+color+';border-radius:99px"></div></div>'
+    +'<span style="font-size:13px;font-weight:500;color:'+color+'">'+score+'</span></div>'
+    +'<div style="font-size:10px;color:var(--txs)">Purchases this week: '+count+' · Locations: '+locs+' · Age group: '+age+'</div>'
+    +'</div>';
+}
+
+var consumers=[
+  {id:'TN-A4872',district:'Chennai',age:'26–45',limit:8,used:7,status:'Active',risk:'High'},
+  {id:'TN-B2341',district:'Coimbatore',age:'26–45',limit:8,used:5,status:'Active',risk:'Medium'},
+  {id:'TN-C9910',district:'Madurai',age:'18–25',limit:4,used:4,status:'Blocked',risk:'High'},
+  {id:'TN-D5523',district:'Salem',age:'26–45',limit:8,used:6,status:'Active',risk:'Medium'},
+  {id:'TN-E7781',district:'Trichy',age:'18–25',limit:4,used:2,status:'Active',risk:'Low'},
+  {id:'TN-F1190',district:'Chennai',age:'46+',limit:12,used:3,status:'Active',risk:'Low'},
+  {id:'TN-G4421',district:'Madurai',age:'26–45',limit:8,used:8,status:'Limit reached',risk:'Medium'},
+  {id:'TN-H9982',district:'Coimbatore',age:'18–25',limit:4,used:1,status:'Cooling',risk:'Low'},
+];
+
+function riskPill(r){
+  if(r==='High')return '<span class="status-pill pill-red">High</span>';
+  if(r==='Medium')return '<span class="status-pill pill-amber">Medium</span>';
+  return '<span class="status-pill pill-green">Low</span>';
+}
+function statusPill(s){
+  if(s==='Active')return '<span class="status-pill pill-green">Active</span>';
+  if(s==='Blocked')return '<span class="status-pill pill-red">Blocked</span>';
+  if(s==='Limit reached')return '<span class="status-pill pill-amber">Limit</span>';
+  return '<span class="status-pill pill-gray">'+s+'</span>';
+}
+
+function renderConsumers(list){
+  var tb=document.getElementById('consumer-tbody');
+  tb.innerHTML=list.map(c=>'<tr><td style="font-family:var(--font-mono);font-size:11px">'+c.id+'</td>'
+    +'<td>'+c.district+'</td><td>'+c.age+'</td>'
+    +'<td>'+c.limit+'/mo</td>'
+    +'<td><div style="display:flex;align-items:center;gap:5px"><div style="width:36px;height:3px;background:var(--surf);border-radius:99px;overflow:hidden"><div style="height:100%;width:'+(Math.round(c.used/c.limit*100))+'%;background:'+(c.used===c.limit?'#C53030':'#0D7A55')+'"></div></div><span style="font-size:10px">'+c.used+'/'+c.limit+'</span></div></td>'
+    +'<td>'+statusPill(c.status)+'</td><td>'+riskPill(c.risk)+'</td></tr>'
+  ).join('');
+}
+
+function searchConsumer(q){
+  var dist=document.getElementById('district-filter').value;
+  var filtered=consumers.filter(c=>{
+    var matchQ=!q||c.id.toLowerCase().includes(q.toLowerCase());
+    var matchD=!dist||c.district===dist;
+    return matchQ&&matchD;
+  });
+  renderConsumers(filtered);
+}
+
+renderConsumers(consumers);
+
+function validatePurchase(){
+  var consumer=document.getElementById('pur-consumer').value;
+  var qty=parseInt(document.getElementById('pur-qty').value)||1;
+  var product=document.getElementById('pur-product').value;
+  var r=document.getElementById('pur-result');
+  r.style.display='block';
+  var c=consumers.find(x=>x.id===consumer);
+  if(!c){r.innerHTML='<div style="padding:10px;background:#FFF0F0;border-radius:8px;border:0.5px solid rgba(197,48,48,0.2);font-size:12px;color:#C53030"><i class="ti ti-alert-circle"></i> Consumer not found in registry.</div>';return;}
+  if(c.status==='Blocked'){r.innerHTML='<div style="padding:10px;background:#FFF0F0;border-radius:8px;border:0.5px solid rgba(197,48,48,0.2);font-size:12px;color:#C53030"><i class="ti ti-ban"></i> Consumer blocked by AI monitoring system.</div>';return;}
+  if(c.used+qty>c.limit){r.innerHTML='<div style="padding:10px;background:#FFF8EC;border-radius:8px;border:0.5px solid rgba(212,129,26,0.2);font-size:12px;color:#854F0B"><i class="ti ti-alert-triangle"></i> Purchase exceeds monthly limit ('+c.used+'/'+c.limit+' used). Request denied.</div>';return;}
+  r.innerHTML='<div style="padding:10px;background:#EAF7F1;border-radius:8px;border:0.5px solid rgba(13,122,85,0.2);font-size:12px;color:#085041"><i class="ti ti-circle-check"></i> Purchase approved — '+qty+'x '+product+' for '+consumer+'. Remaining limit: '+(c.limit-c.used-qty)+'/'+c.limit+'</div>';
+}
+</script>
